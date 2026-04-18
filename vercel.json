@@ -1,8 +1,0 @@
-{
-  "version": 2,
-  "public": true,
-  "name": "repuscope-frontend",
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/frontend/$1" }
-  ]
-}
