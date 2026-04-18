@@ -178,14 +178,19 @@ async def get_me(user: dict = Depends(get_current_user)):
 # --- Protected Routes with Multi-tenancy ---
 
 @app.get("/api/v1/verify", response_model=CompanyVerification, tags=["Entity Management"])
-async def verify_company(rc_number: str = Query(..., min_length=2), user: dict = Depends(get_current_user)):
+async def verify_company(query: str = Query(..., min_length=2), user: dict = Depends(get_current_user)):
     org_id = user["org_id"]
     
-    logger.info(f"Verifying entity: {rc_number} for Org: {org_id}")
+    logger.info(f"Verifying entity: {query} for Org: {org_id}")
+    
+    # Intelligently check if user searched by RC Number or Company Name
+    is_rc_number = query.upper().startswith("RC")
+    
     # Filter by Org ID for true multi-tenancy
+    query_col = "rc_number" if is_rc_number else "company_name"
     response = supabase.table("entities") \
         .select("*") \
-        .eq("rc_number", rc_number) \
+        .ilike(query_col, f"%{query}%") \
         .eq("org_id", org_id) \
         .execute()
     
@@ -193,15 +198,19 @@ async def verify_company(rc_number: str = Query(..., min_length=2), user: dict =
         entity = response.data[0]
     else:
         # Trigger Cold Start Scrape
-        logger.info(f"New entity detected. Scraping CAC records for {rc_number}...")
-        scrape_result = await scraper.fetch_compliance_status(rc_number, "CAC")
+        logger.info(f"New entity detected. Scraping records for {query}...")
+        scrape_result = await scraper.fetch_compliance_status(query, "CAC")
         
-        # Save new entity to DB
+        # Save new entity to DB securely binding the tenant Org ID
+        generated_rc = query if is_rc_number else f"RC-PENDING-{str(uuid.uuid4())[:6].upper()}"
+        resolved_name = f"New Entity ({query})" if is_rc_number else query.title()
+        
         new_entity = {
-            "rc_number": rc_number,
-            "company_name": f"New Entity ({rc_number})", # Scraper would ideally return this
-            "status": "Active" if scrape_result.get("is_compliant") else "Pending",
-            "registered_address": "Located via CAC Search"
+            "rc_number": generated_rc,
+            "company_name": resolved_name, 
+            "status": "Active" if scrape_result.get("is_compliant") else "Pending Verification",
+            "registered_address": "Pending detailed CAC extraction",
+            "org_id": org_id # CRITICAL FIX: required for insert success
         }
         supabase.table("entities").insert(new_entity).execute()
         entity = new_entity
@@ -211,7 +220,7 @@ async def verify_company(rc_number: str = Query(..., min_length=2), user: dict =
         "company_name": entity["company_name"],
         "status": entity["status"],
         "registered_address": entity["registered_address"],
-        "directors": ["Synced from Official Record"]
+        "directors": ["Awaiting Board Verification"]
     }
 
 @app.get("/api/v1/stats", tags=["Dashboard"])

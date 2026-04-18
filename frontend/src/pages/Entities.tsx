@@ -22,7 +22,7 @@ const Entities: React.FC = () => {
     if (!query) return;
     setLoading(true);
     try {
-      const res = await client.get(`/verify?rc_number=${query}`);
+      const res = await client.get(`/verify?query=${encodeURIComponent(query)}`);
       setEntity(res.data);
       fetchAllIntelligence(res.data.rc_number, res.data.company_name);
     } catch (err) {
@@ -74,7 +74,7 @@ const Entities: React.FC = () => {
             type="text" 
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="RC Number (e.g. RC1234567)"
+            placeholder="Enter Company Name or RC Number"
             className="w-full pl-12 pr-4 py-4 bg-white border border-slate-200 rounded-2xl outline-none focus:border-primary focus:ring-4 focus:ring-primary/5 shadow-sm transition-all font-medium" 
           />
           {loading && <div className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />}
@@ -87,7 +87,7 @@ const Entities: React.FC = () => {
              <Building size={32} />
           </div>
           <h3 className="text-lg font-bold text-slate-900">Search for an entity</h3>
-          <p className="text-slate-500 text-sm max-w-sm mt-2">Enter a verified CAC RC-Number to begin technical due diligence and reputation analysis.</p>
+          <p className="text-slate-500 text-sm max-w-sm mt-2">Enter a company name (e.g. Zenith Bank Plc) or a verified CAC RC-Number to begin technical due diligence and reputation analysis.</p>
         </div>
       ) : (
         <motion.div 
