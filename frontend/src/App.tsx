@@ -12,7 +12,7 @@ import Reports from './pages/Reports';
 import Admin from './pages/Admin';
 import client from './api/client';
 import type { User } from './types';
-import { Search, Bell, PlusCircle, ChevronDown, LogOut } from 'lucide-react';
+import { Bell, PlusCircle, ChevronDown, LogOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const App: React.FC = () => {
