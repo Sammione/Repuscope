@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Building, Shield, CreditCard, Leaf, Newspaper, FileText, ChevronRight } from 'lucide-react';
 import client from '../api/client';
-import type { Entity, ReputationData, ESGAssessment, CreditRisk, NewsArticle } from '../types';
+import type { Entity, ReputationData, ESGAssessment, CreditRisk, NewsArticle, ComplianceRecord } from '../types';
 
 const Entities: React.FC = () => {
   const [query, setQuery] = useState('');
@@ -15,7 +15,7 @@ const Entities: React.FC = () => {
   const [esg, setEsg] = useState<ESGAssessment | null>(null);
   const [credit, setCredit] = useState<CreditRisk | null>(null);
   const [news, setNews] = useState<NewsArticle[]>([]);
-  // const [compliance, setCompliance] = useState<ComplianceRecord[]>([]);
+  const [compliance, setCompliance] = useState<ComplianceRecord[]>([]);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,16 +34,18 @@ const Entities: React.FC = () => {
 
   const fetchAllIntelligence = async (rc: string, name: string) => {
     try {
-      const [repRes, esgRes, creditRes, newsRes] = await Promise.all([
+      const [repRes, esgRes, creditRes, newsRes, compRes] = await Promise.all([
         client.get(`/reputation/${rc}`),
         client.get(`/esg/${rc}`),
         client.get(`/credit-risk/${rc}`),
-        client.get(`/intelligence/${encodeURIComponent(name)}?rc_number=${rc}`)
+        client.get(`/intelligence/${encodeURIComponent(name)}?rc_number=${rc}`),
+        client.get(`/compliance/${rc}`)
       ]);
       setReputation(repRes.data);
       setEsg(esgRes.data);
       setCredit(creditRes.data);
       setNews(newsRes.data);
+      setCompliance(compRes.data);
     } catch (err) {
       console.error('Failed to fetch intelligence modules', err);
     }
@@ -245,15 +247,21 @@ const Entities: React.FC = () => {
 
                 {activeTab === 'compliance' && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* Hardcoding compliance states until backend feed is full, since compliance fetch is commented out in earlier cleanup */}
-                    <div className="card border-l-4 border-green-500">
-                      <h3 className="font-bold text-lg mb-2">Corporate Affairs Commission (CAC)</h3>
-                      <div className="text-green-600 font-bold">Status: Active & Compliant</div>
-                    </div>
-                    <div className="card border-l-4 border-amber-500">
-                      <h3 className="font-bold text-lg mb-2">Federal Inland Revenue (FIRS)</h3>
-                      <div className="text-amber-600 font-bold">Status: Verification Pending</div>
-                    </div>
+                    {compliance.length === 0 ? (
+                      <div className="col-span-full text-slate-500 italic p-4 bg-slate-50 rounded-xl text-sm">
+                         No compliance records found in the database.
+                      </div>
+                    ) : (
+                      compliance.map((comp, idx) => (
+                        <div key={idx} className={`card border-l-4 ${comp.status === 'Compliant' ? 'border-green-500' : (comp.status === 'Overdue' ? 'border-red-500' : 'border-amber-500')}`}>
+                          <h3 className="font-bold text-lg mb-2">{comp.agency}</h3>
+                          <div className={`font-bold ${comp.status === 'Compliant' ? 'text-green-600' : (comp.status === 'Overdue' ? 'text-red-600' : 'text-amber-600')}`}>
+                            Status: {comp.status}
+                          </div>
+                          {comp.last_verified && <div className="text-xs text-slate-400 mt-2">Verified: {new Date(comp.last_verified).toLocaleDateString()}</div>}
+                        </div>
+                      ))
+                    )}
                   </div>
                 )}
 
