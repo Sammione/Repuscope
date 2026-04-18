@@ -224,7 +224,7 @@ async def get_dashboard_stats():
         return {
             "entities_monitored": entities_count.count or 0,
             "high_risk_alerts": len(risk_count.data) if risk_count.data else 0,
-            "avg_resolution_time": "4.2h" # Calculated from recent alerts
+            "avg_resolution_time": "No Data" 
         }
     except Exception as e:
         logger.error(f"Stats error: {str(e)}")
@@ -241,13 +241,13 @@ async def get_reputation_score(rc_number: str):
     """Retrieves the reputation score from Supabase."""
     response = supabase.table("reputation_scores").select("*").eq("rc_number", rc_number).execute()
     if not response.data:
-        # Default assessment for new entities
+        # Empty state for new entities before async processing finishes
         return {
             "rc_number": rc_number,
-            "score": 60.0,
+            "score": 0.0,
             "sentiment_polarity": 0.0,
-            "compliance_subscore": 50.0,
-            "risk_level": "Medium"
+            "compliance_subscore": 0.0,
+            "risk_level": "Unassessed"
         }
     return response.data[0]
 
@@ -264,10 +264,10 @@ async def get_credit_risk(rc_number: str):
     response = supabase.table("credit_risk").select("*").eq("rc_number", rc_number).execute()
     if not response.data:
         return {
-            "grade": "B", 
-            "probability_of_default": 0.052, 
-            "debt_pressure": "Moderate", 
-            "outlook": "Stable"
+            "grade": "N/A", 
+            "probability_of_default": 0.0, 
+            "debt_pressure": "No Data", 
+            "outlook": "No Data"
         }
     return response.data[0]
 

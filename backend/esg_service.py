@@ -20,13 +20,13 @@ class ESGService:
         response = supabase.table("esg_metrics").select("*").eq("rc_number", rc_number).execute()
         
         if not response.data:
-            # Default/Starting values for new entities
+            # Empty state indicating no assessment data exists in the database
             return {
-                "environmental": 1.5,
-                "social": 2.0,
-                "governance": 2.5,
-                "maturity_level": "Developing",
-                "summary": "Initial assessment required for this entity."
+                "environmental": 0.0,
+                "social": 0.0,
+                "governance": 0.0,
+                "maturity_level": "Unassessed",
+                "summary": "No ESG data available in the current tenant database."
             }
 
         data = response.data[0]
