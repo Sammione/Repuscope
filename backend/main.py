@@ -121,37 +121,47 @@ async def health_check():
 
 @app.post("/api/v1/auth/register", tags=["Authentication"])
 async def register(user: UserRegister):
-    # 1. Create Organization
-    org_id = str(uuid.uuid4())
-    org_data = {"id": org_id, "name": user.org_name}
-    supabase.table("organizations").insert(org_data).execute()
-    
-    # 2. Create User
-    user_id = str(uuid.uuid4())
-    hashed_pw = get_password_hash(user.password)
-    user_data = {
-        "id": user_id, 
-        "email": user.email, 
-        "hashed_password": hashed_pw, 
-        "org_id": org_id,
-        "role": "admin"
-    }
-    supabase.table("users").insert(user_data).execute()
-    
-    return {"message": "User and Organization created successfully", "org_id": org_id}
+    try:
+        # 1. Create Organization
+        org_id = str(uuid.uuid4())
+        org_data = {"id": org_id, "name": user.org_name}
+        supabase.table("organizations").insert(org_data).execute()
+        
+        # 2. Create User
+        user_id = str(uuid.uuid4())
+        hashed_pw = get_password_hash(user.password)
+        user_data = {
+            "id": user_id, 
+            "email": user.email, 
+            "hashed_password": hashed_pw, 
+            "org_id": org_id,
+            "role": "admin"
+        }
+        supabase.table("users").insert(user_data).execute()
+        
+        return {"message": "User and Organization created successfully", "org_id": org_id}
+    except Exception as e:
+        logger.error(f"Registration error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Registration failed: {str(e)}")
 
 @app.post("/api/v1/auth/login", response_model=Token, tags=["Authentication"])
 async def login(user: UserLogin):
-    response = supabase.table("users").select("*").eq("email", user.email).execute()
-    if not response.data:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
-    
-    db_user = response.data[0]
-    if not verify_password(user.password, db_user["hashed_password"]):
-        raise HTTPException(status_code=401, detail="Invalid credentials")
-    
-    access_token = create_access_token(data={"sub": db_user["email"], "org_id": db_user["org_id"]})
-    return {"access_token": access_token, "token_type": "bearer"}
+    try:
+        response = supabase.table("users").select("*").eq("email", user.email).execute()
+        if not response.data:
+            raise HTTPException(status_code=401, detail="Invalid credentials")
+        
+        db_user = response.data[0]
+        if not verify_password(user.password, db_user["hashed_password"]):
+            raise HTTPException(status_code=401, detail="Invalid credentials")
+        
+        access_token = create_access_token(data={"sub": db_user["email"], "org_id": db_user["org_id"]})
+        return {"access_token": access_token, "token_type": "bearer"}
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        logger.error(f"Login error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Login failed: {str(e)}")
 
 # Dependency for protected routes
 async def get_current_user(token: str = Query(...)): # Switching Query for simplicity in this demo, normally OAuth2PasswordBearer
