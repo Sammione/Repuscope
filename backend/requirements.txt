@@ -12,3 +12,4 @@ motor>=3.3.2
 python-dotenv>=1.0.0
 openai
 supabase
+beautifulsoup4

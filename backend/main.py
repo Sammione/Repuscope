@@ -16,11 +16,16 @@ try:
     from data_pipeline.scraper import RegulatoryScraper
     from backend.auth_utils import get_password_hash, verify_password, create_access_token, decode_access_token
 except ImportError:
+    # This block allows local execution within the backend folder if needed
     from news_service import NewsService
     from database import get_supabase_client
     from esg_service import ESGService
-    from ..data_pipeline.scraper import RegulatoryScraper # Adjust if necessary
     from auth_utils import get_password_hash, verify_password, create_access_token, decode_access_token
+    # For scraper, we might need a fallback or absolute import
+    try:
+        from data_pipeline.scraper import RegulatoryScraper
+    except ImportError:
+        from ..data_pipeline.scraper import RegulatoryScraper
 
 from fastapi.security import OAuth2PasswordBearer
 import uuid
