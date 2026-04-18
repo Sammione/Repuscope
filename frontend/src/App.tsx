@@ -3,6 +3,7 @@ import Sidebar from './components/Sidebar';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Entities from './pages/Entities';
+import Placeholder from './pages/Placeholder';
 import client from './api/client';
 import type { User } from './types';
 import { Search, Bell, PlusCircle, ChevronDown, LogOut } from 'lucide-react';
@@ -114,16 +115,13 @@ const App: React.FC = () => {
             <AnimatePresence mode="wait">
               {activeSection === 'dashboard' && <Dashboard key="dashboard" />}
               {activeSection === 'entities' && <Entities key="entities" />}
-              {!['dashboard', 'entities'].includes(activeSection) && (
-                <motion.div 
-                  key="coming-soon"
-                  initial={{ opacity: 0 }} 
-                  animate={{ opacity: 1 }} 
-                  className="h-full flex items-center justify-center text-slate-400 font-bold"
-                >
-                  Module Coming Soon...
-                </motion.div>
-              )}
+              {activeSection === 'analytics' && <Placeholder key="analytics" title="Advanced Analytics" description="Cross-entity intelligence and market benchmark trends are being initialized." />}
+              {activeSection === 'compliance' && <Placeholder key="compliance" title="Compliance Hub" description="Real-time regulatory tracking grid is synchronizing with external APIs." />}
+              {activeSection === 'credit-risk' && <Placeholder key="credit-risk" title="Credit Risk Center" description="Financial health and probability of default models are loading." />}
+              {activeSection === 'esg' && <Placeholder key="esg" title="ESG Intelligence" description="Environmental, Social, and Governance benchmarks are being processed." />}
+              {activeSection === 'alerts' && <Placeholder key="alerts" title="Command & Alert Center" description="Consolidated risk signals feed is currently warming up." />}
+              {activeSection === 'reports' && <Placeholder key="reports" title="Reporting Console" description="The report generation engine is preparing PDF export capabilities." />}
+              {activeSection === 'admin' && <Placeholder key="admin" title="System Administration" description="Access control and system pipeline metrics are loading." />}
             </AnimatePresence>
           </div>
         </section>
