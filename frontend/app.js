@@ -1,6 +1,6 @@
 /**
  * RepuScope - Enterprise Reputation Intelligence
- * Main Application Logic (Fully Dynamic & Production Ready)
+ * Main Application Logic (Clean Light Version - Fixed)
  */
 
 const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
@@ -20,9 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-/**
- * Authentication & State Management
- */
 function isAuthenticated() {
     return !!localStorage.getItem('repuscope_token');
 }
@@ -45,14 +42,10 @@ async function fetchUserProfile() {
         const response = await fetch(`${API_BASE_URL}/auth/me?token=${token}`);
         if (response.ok) {
             const user = await response.json();
-            document.querySelector('.user-name').innerText = user.email.split('@')[0];
-            document.querySelector('.user-role').innerText = `Org: ${user.org_id.substring(0,8)}`;
-            
-            // Update Avatars
-            const avatarImg = document.querySelector('.avatar img');
-            if (avatarImg) {
-                avatarImg.src = `https://ui-avatars.com/api/?name=${user.email}&background=0D8ABC&color=fff`;
-            }
+            const nameEl = document.querySelector('.user-name');
+            const roleEl = document.querySelector('.user-role');
+            if (nameEl) nameEl.innerText = user.email.split('@')[0];
+            if (roleEl) roleEl.innerText = `Org: ${user.org_id.substring(0,8)}`;
         }
     } catch (err) {
         console.error('Failed to fetch profile', err);
@@ -103,12 +96,10 @@ function setupEventListeners() {
     });
 }
 
-/**
- * Section & Tab Switching
- */
 function switchSection(sectionId) {
     document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-    document.querySelector(`[data-section="${sectionId}"]`).classList.add('active');
+    const activeNav = document.querySelector(`[data-section="${sectionId}"]`);
+    if (activeNav) activeNav.classList.add('active');
     
     document.querySelectorAll('.app-section').forEach(sec => {
         sec.classList.toggle('hidden', sec.id !== `section-${sectionId}`);
@@ -119,26 +110,27 @@ function switchSection(sectionId) {
 
 function switchTab(tabId) {
     document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
-    document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+    const activeTab = document.querySelector(`[data-tab="${tabId}"]`);
+    if (activeTab) activeTab.classList.add('active');
     
     document.querySelectorAll('.tab-pane').forEach(p => {
         p.classList.toggle('hidden', p.id !== `tab-${tabId}`);
     });
 }
 
-/**
- * Logic: Dashboard Data
- */
 async function loadDashboardData() {
     const token = localStorage.getItem('repuscope_token');
     try {
         const response = await fetch(`${API_BASE_URL}/stats?token=${token}`);
         const stats = await response.json();
         
-        // Update KPI Cards
-        document.getElementById('kpi-coverage').innerText = stats.entities_monitored.toLocaleString();
-        document.getElementById('kpi-high-risk').innerText = stats.high_risk_alerts;
-        document.getElementById('kpi-resolution').innerText = stats.avg_resolution_time;
+        const coverageEl = document.getElementById('kpi-coverage');
+        const riskEl = document.getElementById('kpi-high-risk');
+        const resEl = document.getElementById('kpi-resolution');
+        
+        if (coverageEl) coverageEl.innerText = stats.entities_monitored.toLocaleString();
+        if (riskEl) riskEl.innerText = stats.high_risk_alerts;
+        if (resEl) resEl.innerText = stats.avg_resolution_time;
         
         initDashboardCharts();
     } catch (err) {
@@ -146,9 +138,6 @@ async function loadDashboardData() {
     }
 }
 
-/**
- * Logic: Search & Entity Intelligence
- */
 async function handleSearch(query) {
     if (!query) return;
     const token = localStorage.getItem('repuscope_token');
@@ -156,10 +145,10 @@ async function handleSearch(query) {
     
     try {
         searchInput.disabled = true;
-        searchInput.placeholder = "Analyzing entity...";
+        searchInput.placeholder = "Searching database...";
         
         const response = await fetch(`${API_BASE_URL}/verify?rc_number=${query}&token=${token}`);
-        if (!response.ok) throw new Error("Entity not found or verification failed");
+        if (!response.ok) throw new Error("Entity verification failed");
         
         const entity = await response.json();
         populateEntityView(entity);
@@ -177,11 +166,12 @@ async function populateEntityView(entity) {
     const token = localStorage.getItem('repuscope_token');
     const rc = entity.rc_number;
 
-    // 1. Basic Info
-    document.getElementById('entity-name').innerText = entity.company_name;
-    document.querySelector('.badge-tag.badge-verified').innerText = `${rc} • CAC ${entity.status.toUpperCase()}`;
+    const nameEl = document.getElementById('entity-name');
+    const badgeEl = document.querySelector('.badge-tag.badge-verified');
     
-    // 2. Fetch Multi-module Intelligence
+    if (nameEl) nameEl.innerText = entity.company_name;
+    if (badgeEl) badgeEl.innerText = `${rc} • CAC ${entity.status.toUpperCase()}`;
+    
     fetchReputationData(rc, token);
     fetchESGData(rc, token);
     fetchCreditData(rc, token);
@@ -190,168 +180,114 @@ async function populateEntityView(entity) {
 }
 
 async function fetchReputationData(rc, token) {
-    const response = await fetch(`${API_BASE_URL}/reputation/${rc}?token=${token}`);
-    const data = await response.json();
-    
-    const scoreCircle = document.querySelector('.score-box .score-circle');
-    if (scoreCircle) {
-        scoreCircle.innerText = Math.round(data.score);
-        scoreCircle.style.borderColor = data.score > 70 ? 'var(--compliance-ok)' : (data.score > 40 ? 'var(--risk-medium)' : 'var(--risk-high)');
-    }
-    
-    // Update Risk Level Badge
-    const riskBadge = document.querySelector('.badge-tag.badge-risk-low');
-    if (riskBadge) {
-        riskBadge.innerText = `RISK LEVEL: ${data.risk_level.toUpperCase()}`;
-        riskBadge.className = `badge-tag badge-risk-${data.risk_level.toLowerCase()}`;
-    }
+    try {
+        const response = await fetch(`${API_BASE_URL}/reputation/${rc}?token=${token}`);
+        const data = await response.json();
+        
+        const scoreCircle = document.querySelector('.score-box .score-circle');
+        if (scoreCircle) {
+            scoreCircle.innerText = Math.round(data.score);
+        }
+        
+        const riskBadge = document.querySelector('.badge-tag.badge-risk-low') || document.querySelector('.badge-tag.badge-risk-medium') || document.querySelector('.badge-tag.badge-risk-high');
+        if (riskBadge) {
+            riskBadge.innerText = `RISK LEVEL: ${data.risk_level.toUpperCase()}`;
+            riskBadge.className = `badge-tag badge-risk-${data.risk_level.toLowerCase()}`;
+        }
+    } catch (e) {}
 }
 
 async function fetchESGData(rc, token) {
-    const response = await fetch(`${API_BASE_URL}/esg/${rc}?token=${token}`);
-    const data = await response.json();
-    
-    const esgPane = document.getElementById('tab-esg');
-    if (esgPane) {
-        esgPane.innerHTML = `
-            <div class="card">
-                <div class="card-header"><h3>ESG Maturity Assessment</h3></div>
-                <div class="card-content">
-                    <div class="kpi-grid" style="margin-bottom: 20px;">
-                        <div class="kpi-card"><h4>Environmental</h4><p>${data.environmental}/5.0</p></div>
-                        <div class="kpi-card"><h4>Social</h4><p>${data.social}/5.0</p></div>
-                        <div class="kpi-card"><h4>Governance</h4><p>${data.governance}/5.0</p></div>
-                    </div>
-                    <div class="flag-item"><i data-lucide="award"></i> Level: <strong>${data.maturity_level}</strong></div>
-                    <p class="text-muted" style="margin-top: 15px;">${data.summary}</p>
-                </div>
-            </div>
-        `;
-        lucide.createIcons();
-    }
+    try {
+        const response = await fetch(`${API_BASE_URL}/esg/${rc}?token=${token}`);
+        const data = await response.json();
+        const esgPane = document.getElementById('tab-esg');
+        if (esgPane) {
+            esgPane.innerHTML = `<div class="card"><div class="card-content"><h3>ESG Maturity</h3><p>Level: <strong>${data.maturity_level}</strong></p><p>${data.summary}</p></div></div>`;
+        }
+    } catch (e) {}
 }
 
 async function fetchNewsData(name, rc, token) {
-    const feed = document.getElementById('entity-news-feed');
-    feed.innerHTML = '<p class="text-muted">Scanning global news signals...</p>';
-    
-    const response = await fetch(`${API_BASE_URL}/intelligence/${encodeURIComponent(name)}?rc_number=${rc}&token=${token}`);
-    const articles = await response.json();
-    
-    if (articles.length === 0) {
-        feed.innerHTML = '<p class="text-muted">No recent news signals found for this entity.</p>';
-        return;
-    }
+    try {
+        const feed = document.getElementById('entity-news-feed');
+        if (!feed) return;
+        feed.innerHTML = '<p>Scanning news...</p>';
+        const response = await fetch(`${API_BASE_URL}/intelligence/${encodeURIComponent(name)}?rc_number=${rc}&token=${token}`);
+        const articles = await response.json();
+        
+        if (articles.length === 0) {
+            feed.innerHTML = '<p>No news signals found.</p>';
+            return;
+        }
 
-    feed.innerHTML = articles.map(art => `
-        <div class="flag-item" style="align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border-color);">
-            <div class="sentiment-tag ${art.sentiment.toLowerCase()}">${art.sentiment[0]}</div>
-            <div style="flex: 1;">
-                <a href="${art.url}" target="_blank" style="font-weight: 600; text-decoration: none; color: inherit;">${art.title}</a>
-                <p class="text-muted" style="font-size: 0.8rem; margin-top: 4px;">${art.source} • ${new Date(art.published_at).toLocaleDateString()}</p>
+        feed.innerHTML = articles.map(art => `
+            <div style="margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
+                <p><strong>${art.sentiment}</strong>: <a href="${art.url}" target="_blank">${art.title}</a></p>
+                <small>${art.source} • ${new Date(art.published_at).toLocaleDateString()}</small>
             </div>
-        </div>
-    `).join('');
+        `).join('');
+    } catch (e) {}
 }
 
 async function fetchCreditData(rc, token) {
-    const response = await fetch(`${API_BASE_URL}/credit-risk/${rc}?token=${token}`);
-    const data = await response.json();
-    
-    const creditPane = document.getElementById('tab-credit');
-    creditPane.innerHTML = `
-        <div class="card">
-            <div class="card-header"><h3>Credit Risk Profile</h3></div>
-            <div class="card-content">
-                <div class="kpi-grid">
-                    <div class="kpi-card"><h4>Risk Grade</h4><p class="text-green">${data.grade}</p></div>
-                    <div class="kpi-card"><h4>PD Rate</h4><p>${(data.probability_of_default * 100).toFixed(2)}%</p></div>
-                </div>
-                <div style="margin-top: 20px;">
-                    <p>Debt Pressure: <strong>${data.debt_pressure}</strong></p>
-                    <p>Outlook: <strong>${data.outlook}</strong></p>
-                </div>
-            </div>
-        </div>
-    `;
+    try {
+        const response = await fetch(`${API_BASE_URL}/credit-risk/${rc}?token=${token}`);
+        const data = await response.json();
+        const creditPane = document.getElementById('tab-credit');
+        if (creditPane) {
+            creditPane.innerHTML = `<div class="card"><h3>Credit Profile</h3><p>Grade: ${data.grade}</p><p>PD: ${(data.probability_of_default * 100).toFixed(2)}%</p></div>`;
+        }
+    } catch (e) {}
 }
 
 async function fetchComplianceData(rc, token) {
-    const response = await fetch(`${API_BASE_URL}/compliance/${rc}?token=${token}`);
-    const records = await response.json();
-    
-    const compliancePane = document.getElementById('tab-compliance');
-    if (records.length === 0) {
-        compliancePane.innerHTML = '<p class="text-muted" style="padding: 20px;">No regulatory records synced yet.</p>';
-        return;
-    }
-
-    compliancePane.innerHTML = `
-        <div class="kpi-grid">
-            ${records.map(rec => `
-                <div class="kpi-card" style="border-left: 4px solid ${rec.status === 'Compliant' ? 'var(--compliance-ok)' : 'var(--risk-high)'}">
-                    <h3>${rec.agency}</h3>
-                    <p class="${rec.status === 'Compliant' ? 'text-green' : 'text-red'}">${rec.status}</p>
-                    <span class="text-muted" style="font-size: 0.7rem;">Verified: ${rec.last_verified || 'Pending'}</span>
-                </div>
-            `).join('')}
-        </div>
-    `;
+    try {
+        const response = await fetch(`${API_BASE_URL}/compliance/${rc}?token=${token}`);
+        const records = await response.json();
+        const pane = document.getElementById('tab-compliance');
+        if (pane) {
+            pane.innerHTML = records.map(r => `<div>${r.agency}: ${r.status}</div>`).join('');
+        }
+    } catch (e) {}
 }
 
-/**
- * Charts Initialization (Data-driven)
- */
+/** Charts (Simplified for Reversion) **/
 const charts = {};
 function renderChart(id, type, data, options = {}) {
     const ctx = document.getElementById(id);
     if (!ctx) return;
     if (charts[id]) charts[id].destroy();
-    charts[id] = new Chart(ctx, { type, data, options: { responsive: true, maintainAspectRatio: false, ...options } });
+    charts[id] = new Chart(ctx, { type, data, options: { responsive: true, ...options } });
 }
 
 function initDashboardCharts() {
     renderChart('reputationTrendChart', 'line', {
         labels: ['Jan', 'Feb', 'Mar', 'Apr'],
-        datasets: [{ label: 'Portfolio Rep.', data: [68, 72, 70, 75], borderColor: '#2563eb', fill: true, tension: 0.4 }]
+        datasets: [{ label: 'Reputation', data: [70, 75, 72, 78], borderColor: '#2563eb' }]
     });
-
     renderChart('complianceHeatmapChart', 'bar', {
-        labels: ['CAC', 'FIRS', 'SEC', 'NSE'],
-        datasets: [{ label: 'Compliant', data: [85, 92, 64, 78], backgroundColor: '#22c55e' }]
+        labels: ['CAC', 'FIRS', 'SEC'],
+        datasets: [{ label: 'Score', data: [80, 90, 60], backgroundColor: '#22c55e' }]
     });
 }
 
-/**
- * Auth Handlers
- */
+/** Auth **/
 async function handleLogin(e) {
     e.preventDefault();
     const email = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
-    const btn = e.target.querySelector('button');
-
     try {
-        btn.innerText = 'Initializing...';
-        btn.disabled = true;
-
         const response = await fetch(`${API_BASE_URL}/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
         });
-
         const data = await response.json();
         if (!response.ok) throw new Error(data.detail || 'Login failed');
-
         localStorage.setItem('repuscope_token', data.access_token);
         window.location.reload();
-    } catch (err) {
-        alert(err.message);
-    } finally {
-        btn.innerText = 'Sign In';
-        btn.disabled = false;
-    }
+    } catch (err) { alert(err.message); }
 }
 
 async function handleRegister(e) {
@@ -359,32 +295,15 @@ async function handleRegister(e) {
     const email = document.getElementById('reg-email').value;
     const password = document.getElementById('reg-password').value;
     const org_name = document.getElementById('reg-org').value;
-    const btn = e.target.querySelector('button');
-
     try {
-        btn.innerText = 'Provisioning...';
-        btn.disabled = true;
-
         const response = await fetch(`${API_BASE_URL}/auth/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password, org_name })
         });
-
         const data = await response.json();
         if (!response.ok) throw new Error(data.detail || 'Registration failed');
-
-        alert('Workspace created! Please log in.');
+        alert('Created! Please login.');
         document.getElementById('auth-toggle-btn').click();
-    } catch (err) {
-        alert(err.message);
-    } finally {
-        btn.innerText = 'Create Workspace';
-        btn.disabled = false;
-    }
-}
-
-function handleLogout() {
-    localStorage.removeItem('repuscope_token');
-    window.location.reload();
+    } catch (err) { alert(err.message); }
 }
