@@ -1,5 +1,5 @@
 import React from 'react';
-import { BellRing, CheckCircle2 } from 'lucide-react';
+
 
 const Alerts: React.FC = () => {
   return (
