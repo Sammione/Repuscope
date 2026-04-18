@@ -58,13 +58,8 @@ const App: React.FC = () => {
       <main className="flex-1 flex flex-col overflow-hidden">
         {/* Top Bar */}
         <header className="h-20 bg-white border-b border-slate-200 px-10 flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-4 text-slate-400 group focus-within:text-primary transition-colors">
-            <Search size={20} />
-            <input 
-              type="text" 
-              placeholder="Quick search entities..." 
-              className="bg-transparent border-none outline-none font-medium text-slate-900 placeholder:text-slate-400 w-80"
-            />
+          <div className="flex items-center gap-4 text-slate-800">
+            <h2 className="font-black text-xl tracking-tight hidden md:block">Workspace Area</h2>
           </div>
 
           <div className="flex items-center gap-6">

@@ -46,10 +46,10 @@ const Dashboard: React.FC = () => {
     },
     { 
       label: 'Trust Score', 
-      value: '78.4', 
+      value: '--', 
       icon: Shield, 
       color: 'bg-amber-500', 
-      trend: '+2.1', 
+      trend: 'N/A', 
       isUp: true 
     },
   ];
@@ -102,16 +102,15 @@ const Dashboard: React.FC = () => {
             <button className="text-xs font-bold text-primary hover:text-primary-hover">View All</button>
           </div>
           <div className="space-y-4">
-             {[1, 2, 3].map(i => (
-               <div key={i} className="flex items-center gap-4 p-4 bg-slate-50 rounded-xl border border-slate-100">
-                  <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-                  <div className="flex-1">
-                    <div className="text-sm font-bold">Zenith Bank Plc</div>
-                    <div className="text-xs text-slate-500">Compliance mismatch detected</div>
-                  </div>
-                  <div className="text-[10px] font-black uppercase text-slate-400">2m ago</div>
+             {stats?.high_risk_alerts === 0 ? (
+               <div className="text-sm text-slate-500 italic p-4 bg-slate-50 rounded-xl">
+                 No active risk alerts at this time.
                </div>
-             ))}
+             ) : (
+               <div className="text-sm text-slate-500 italic p-4 bg-slate-50 rounded-xl">
+                 Alerts are currently being aggregated.
+               </div>
+             )}
           </div>
         </div>
       </div>
