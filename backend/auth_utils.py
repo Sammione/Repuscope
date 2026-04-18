@@ -14,11 +14,19 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 # 1 day
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
+import hashlib
 
 def get_password_hash(password):
-    return pwd_context.hash(password)
+    # Pre-hash with SHA256 to support passwords longer than 71 chars (Bcrypt limit)
+    pwd_bytes = password.encode('utf-8')
+    digest = hashlib.sha256(pwd_bytes).hexdigest()
+    return pwd_context.hash(digest)
+
+def verify_password(plain_password, hashed_password):
+    # Pre-hash input to match the stored hash logic
+    pwd_bytes = plain_password.encode('utf-8')
+    digest = hashlib.sha256(pwd_bytes).hexdigest()
+    return pwd_context.verify(digest, hashed_password)
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
