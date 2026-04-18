@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Optional
 from pydantic import BaseModel, Field
@@ -161,16 +161,14 @@ async def get_current_user(token: str = Query(...)): # Switching Query for simpl
     return payload
 
 @app.get("/api/v1/auth/me", response_model=UserProfile, tags=["Authentication"])
-async def get_me(current_user: dict = Query(...)):
-    user = await get_current_user(current_user)
+async def get_me(user: dict = Depends(get_current_user)):
     response = supabase.table("users").select("*").eq("email", user["sub"]).execute()
     return response.data[0]
 
 # --- Protected Routes with Multi-tenancy ---
 
 @app.get("/api/v1/verify", response_model=CompanyVerification, tags=["Entity Management"])
-async def verify_company(rc_number: str = Query(..., min_length=2), token: str = Query(...)):
-    user = await get_current_user(token)
+async def verify_company(rc_number: str = Query(..., min_length=2), user: dict = Depends(get_current_user)):
     org_id = user["org_id"]
     
     logger.info(f"Verifying entity: {rc_number} for Org: {org_id}")
