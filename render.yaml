@@ -1,0 +1,22 @@
+services:
+  # Backend API
+  - type: web
+    name: repuscope-backend
+    env: python
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: JWT_SECRET_KEY
+        sync: false
+
+  # Frontend Static Site
+  - type: static
+    name: repuscope-frontend
+    publishDir: frontend
+    envVars:
+      - key: API_BASE_URL
+        value: https://repuscope-backend.onrender.com/api/v1

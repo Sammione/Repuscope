@@ -1,0 +1,10 @@
+# Environment Variables
+.env
+*.env
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+node_modules/
+dist/
+build/
