@@ -3,7 +3,13 @@ import Sidebar from './components/Sidebar';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Entities from './pages/Entities';
-import Placeholder from './pages/Placeholder';
+import Analytics from './pages/Analytics';
+import Compliance from './pages/Compliance';
+import CreditRisk from './pages/CreditRisk';
+import ESG from './pages/ESG';
+import Alerts from './pages/Alerts';
+import Reports from './pages/Reports';
+import Admin from './pages/Admin';
 import client from './api/client';
 import type { User } from './types';
 import { Search, Bell, PlusCircle, ChevronDown, LogOut } from 'lucide-react';
@@ -115,13 +121,13 @@ const App: React.FC = () => {
             <AnimatePresence mode="wait">
               {activeSection === 'dashboard' && <Dashboard key="dashboard" />}
               {activeSection === 'entities' && <Entities key="entities" />}
-              {activeSection === 'analytics' && <Placeholder key="analytics" title="Advanced Analytics" description="Cross-entity intelligence and market benchmark trends are being initialized." />}
-              {activeSection === 'compliance' && <Placeholder key="compliance" title="Compliance Hub" description="Real-time regulatory tracking grid is synchronizing with external APIs." />}
-              {activeSection === 'credit-risk' && <Placeholder key="credit-risk" title="Credit Risk Center" description="Financial health and probability of default models are loading." />}
-              {activeSection === 'esg' && <Placeholder key="esg" title="ESG Intelligence" description="Environmental, Social, and Governance benchmarks are being processed." />}
-              {activeSection === 'alerts' && <Placeholder key="alerts" title="Command & Alert Center" description="Consolidated risk signals feed is currently warming up." />}
-              {activeSection === 'reports' && <Placeholder key="reports" title="Reporting Console" description="The report generation engine is preparing PDF export capabilities." />}
-              {activeSection === 'admin' && <Placeholder key="admin" title="System Administration" description="Access control and system pipeline metrics are loading." />}
+              {activeSection === 'analytics' && <Analytics key="analytics" />}
+              {activeSection === 'compliance' && <Compliance key="compliance" />}
+              {activeSection === 'credit-risk' && <CreditRisk key="credit-risk" />}
+              {activeSection === 'esg' && <ESG key="esg" />}
+              {activeSection === 'alerts' && <Alerts key="alerts" />}
+              {activeSection === 'reports' && <Reports key="reports" />}
+              {activeSection === 'admin' && <Admin key="admin" />}
             </AnimatePresence>
           </div>
         </section>

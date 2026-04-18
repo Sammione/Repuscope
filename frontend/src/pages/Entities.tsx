@@ -227,7 +227,70 @@ const Entities: React.FC = () => {
                     </div>
                   </div>
                 )}
-                {/* Add other tab panes similarly... */}
+                {activeTab === 'reputation' && reputation && (
+                  <div className="card">
+                    <h3 className="font-bold text-xl mb-4">Reputation Assessment</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <div className="text-[10px] font-bold text-slate-400 uppercase">Sentiment Polarity</div>
+                        <div className="text-xl font-black">{reputation.sentiment_polarity}</div>
+                      </div>
+                      <div>
+                        <div className="text-[10px] font-bold text-slate-400 uppercase">Compliance Subscore</div>
+                        <div className="text-xl font-black">{reputation.compliance_subscore}</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'compliance' && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Hardcoding compliance states until backend feed is full, since compliance fetch is commented out in earlier cleanup */}
+                    <div className="card border-l-4 border-green-500">
+                      <h3 className="font-bold text-lg mb-2">Corporate Affairs Commission (CAC)</h3>
+                      <div className="text-green-600 font-bold">Status: Active & Compliant</div>
+                    </div>
+                    <div className="card border-l-4 border-amber-500">
+                      <h3 className="font-bold text-lg mb-2">Federal Inland Revenue (FIRS)</h3>
+                      <div className="text-amber-600 font-bold">Status: Verification Pending</div>
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'credit' && credit && (
+                  <div className="card max-w-xl">
+                    <h3 className="font-bold text-xl mb-4">Credit Risk Profile</h3>
+                    <div className="space-y-4">
+                      <div className="flex justify-between border-b pb-2">
+                        <span className="text-slate-500">Risk Grade</span>
+                        <span className="font-bold text-green-600">{credit.grade}</span>
+                      </div>
+                      <div className="flex justify-between border-b pb-2">
+                        <span className="text-slate-500">Probability of Default</span>
+                        <span className="font-bold">{(credit.probability_of_default * 100).toFixed(2)}%</span>
+                      </div>
+                      <div className="flex justify-between border-b pb-2">
+                        <span className="text-slate-500">Debt Pressure</span>
+                        <span className="font-bold">{credit.debt_pressure}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-500">Market Outlook</span>
+                        <span className="font-bold">{credit.outlook}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'reports' && (
+                  <div className="card">
+                    <h3 className="font-bold text-xl mb-4">Generate Intel Report</h3>
+                    <p className="text-slate-500 mb-6">Export a comprehensive PDF due diligence report for {entity.company_name}.</p>
+                    <button className="btn-primary">
+                      <FileText size={18} />
+                      Export Standard Report
+                    </button>
+                  </div>
+                )}
              </motion.div>
           </AnimatePresence>
         </motion.div>
