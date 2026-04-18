@@ -57,16 +57,7 @@ const Analytics: React.FC = () => {
             </thead>
             <tbody className="text-sm">
               <tr className="border-b border-slate-100 last:border-0 hover:bg-slate-50">
-                <td className="py-4 font-bold">Banking</td>
-                <td className="py-4 text-slate-600">Cross-border regulatory fines</td>
-                <td className="py-4 text-center"><span className="bg-red-100 text-red-700 font-bold px-3 py-1 rounded">High</span></td>
-                <td className="py-4 text-center text-red-500 font-bold">Increasing</td>
-              </tr>
-              <tr className="border-b border-slate-100 last:border-0 hover:bg-slate-50">
-                <td className="py-4 font-bold">Oil & Gas</td>
-                <td className="py-4 text-slate-600">Environmental compliance gaps</td>
-                <td className="py-4 text-center"><span className="bg-amber-100 text-amber-700 font-bold px-3 py-1 rounded">Medium</span></td>
-                <td className="py-4 text-center text-green-500 font-bold">Decreasing</td>
+                <td colSpan={4} className="py-8 text-center text-slate-400 italic">No historical trend data available. Awaiting cross-sector aggregation.</td>
               </tr>
             </tbody>
           </table>

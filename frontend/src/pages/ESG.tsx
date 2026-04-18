@@ -26,17 +26,9 @@ const ESG: React.FC = () => {
             <h3 className="font-bold text-xl">AI Recommended Actions</h3>
           </div>
           <div className="space-y-4">
-            <div className="p-4 bg-primary/5 border border-primary/10 rounded-xl">
-               <h4 className="font-bold text-primary mb-1">Improve Carbon Disclosures</h4>
-               <p className="text-sm text-slate-600">80% of your top-tier entities lack verified scope-3 emission tracking.</p>
+            <div className="p-6 text-center text-sm text-slate-400 italic bg-slate-50 border border-dashed border-slate-200 rounded-xl">
+               Run ESG maturity assessments on individual entities to unlock AI strategy workflows.
             </div>
-            <div className="p-4 bg-primary/5 border border-primary/10 rounded-xl">
-               <h4 className="font-bold text-primary mb-1">Board Diversity Mandates</h4>
-               <p className="text-sm text-slate-600">Consider flagging entities missing modern governance protocols to minimize PR risks.</p>
-            </div>
-            <button className="w-full py-3 bg-slate-100 font-bold text-slate-600 rounded-xl hover:bg-slate-200 transition-colors">
-               Generate Full AI Strategy
-            </button>
           </div>
         </div>
       </div>
