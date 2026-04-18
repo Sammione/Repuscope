@@ -110,7 +110,10 @@ async function handleLogin(e) {
             body: JSON.stringify({ email, password })
         });
 
-        if (!response.ok) throw new Error('Invalid credentials');
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.detail || 'Login failed');
+        }
 
         const data = await response.json();
         localStorage.setItem('repuscope_token', data.access_token);
@@ -143,7 +146,10 @@ async function handleRegister(e) {
             body: JSON.stringify({ email, password, org_name })
         });
 
-        if (!response.ok) throw new Error('Registration failed');
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.detail || 'Registration failed');
+        }
 
         alert('Account created! Please log in.');
         document.getElementById('auth-toggle-btn').click(); // Switch back to login
