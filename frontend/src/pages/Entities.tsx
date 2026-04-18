@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Building, Shield, CreditCard, Leaf, Newspaper, FileText, ChevronRight } from 'lucide-react';
 import client from '../api/client';
-import { Entity, ReputationData, ESGAssessment, CreditRisk, NewsArticle, ComplianceRecord } from '../types';
+import type { Entity, ReputationData, ESGAssessment, CreditRisk, NewsArticle } from '../types';
 
 const Entities: React.FC = () => {
   const [query, setQuery] = useState('');
@@ -15,7 +15,7 @@ const Entities: React.FC = () => {
   const [esg, setEsg] = useState<ESGAssessment | null>(null);
   const [credit, setCredit] = useState<CreditRisk | null>(null);
   const [news, setNews] = useState<NewsArticle[]>([]);
-  const [compliance, setCompliance] = useState<ComplianceRecord[]>([]);
+  // const [compliance, setCompliance] = useState<ComplianceRecord[]>([]);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,18 +34,16 @@ const Entities: React.FC = () => {
 
   const fetchAllIntelligence = async (rc: string, name: string) => {
     try {
-      const [repRes, esgRes, creditRes, newsRes, compRes] = await Promise.all([
+      const [repRes, esgRes, creditRes, newsRes] = await Promise.all([
         client.get(`/reputation/${rc}`),
         client.get(`/esg/${rc}`),
         client.get(`/credit-risk/${rc}`),
-        client.get(`/intelligence/${encodeURIComponent(name)}?rc_number=${rc}`),
-        client.get(`/compliance/${rc}`)
+        client.get(`/intelligence/${encodeURIComponent(name)}?rc_number=${rc}`)
       ]);
       setReputation(repRes.data);
       setEsg(esgRes.data);
       setCredit(creditRes.data);
       setNews(newsRes.data);
-      setCompliance(compRes.data);
     } catch (err) {
       console.error('Failed to fetch intelligence modules', err);
     }

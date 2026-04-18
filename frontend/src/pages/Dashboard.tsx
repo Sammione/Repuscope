@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Database, AlertTriangle, Clock, Shield, TrendingUp, TrendingDown } from 'lucide-react';
 import client from '../api/client';
-import { DashboardStats } from '../types';
+import type { DashboardStats } from '../types';
 
 const Dashboard: React.FC = () => {
   const [stats, setStats] = useState<DashboardStats | null>(null);

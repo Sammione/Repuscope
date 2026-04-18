@@ -4,7 +4,7 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Entities from './pages/Entities';
 import client from './api/client';
-import { User } from './types';
+import type { User } from './types';
 import { Search, Bell, PlusCircle, ChevronDown, LogOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
