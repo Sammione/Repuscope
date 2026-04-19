@@ -45,7 +45,7 @@ const CreditRisk: React.FC = () => {
                <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie data={data.distribution} innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
-                      {data.distribution.map((entry, index) => (
+                      {data.distribution.map((_, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
