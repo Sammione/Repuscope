@@ -25,6 +25,7 @@ const ESG: React.FC = () => {
             <Sparkles className="text-amber-500" />
             <h3 className="font-bold text-xl">AI Recommended Actions</h3>
           </div>
+          <div className="space-y-4">
             <div className="p-4 bg-primary/5 border border-primary/10 rounded-xl">
                <h4 className="font-bold text-primary mb-1">Improve Carbon Disclosures</h4>
                <p className="text-sm text-slate-600">80% of your top-tier entities lack verified scope-3 emission tracking.</p>
