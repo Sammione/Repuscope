@@ -26,9 +26,18 @@ const CreditRisk: React.FC = () => {
             <h3 className="font-bold text-xl text-red-900">Highest Default Risks (Portfolio)</h3>
           </div>
           <div className="space-y-4">
-            <div className="text-center p-6 text-sm text-slate-400 italic bg-slate-50 border border-dashed border-slate-200 rounded-xl">
-               No high-risk credit portfolios detected in the current tenant.
-            </div>
+            {[1, 2, 3].map((_, i) => (
+              <div key={i} className="flex justify-between items-center p-4 bg-red-50 border border-red-100 rounded-xl">
+                <div>
+                  <div className="font-bold text-red-900">Entity Alpha Ltd.</div>
+                  <div className="text-xs text-red-700/70 font-semibold mt-1">RC Number: 194827{i}</div>
+                </div>
+                <div className="text-right">
+                  <div className="font-black text-red-600 text-xl">{(8.4 + i).toFixed(1)}% PD</div>
+                  <div className="text-[10px] uppercase font-bold text-red-500">Grade D</div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
