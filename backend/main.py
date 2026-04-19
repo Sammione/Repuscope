@@ -341,6 +341,50 @@ async def get_portfolio_analytics():
         ]
     }
 
+@app.get("/api/v1/portfolio/trend", tags=["Dashboard"])
+async def get_portfolio_trend():
+    """Returns reputation trend data for the dashboard."""
+    return {
+        "monthly_trend": [
+            {"date": "Day 1", "score": 75}, {"date": "Day 5", "score": 76},
+            {"date": "Day 10", "score": 73}, {"date": "Day 15", "score": 76},
+            {"date": "Day 20", "score": 78}, {"date": "Day 25", "score": 77},
+            {"date": "Day 30", "score": 82}
+        ]
+    }
+
+@app.get("/api/v1/portfolio/compliance", tags=["Dashboard"])
+async def get_portfolio_compliance():
+    """Returns portfolio-wide compliance statistics."""
+    import random
+    return {
+        "firs_status": str(random.randint(85, 95)) + "%",
+        "cac_status": str(random.randint(80, 92)) + "%",
+        "sec_compliance": str(random.randint(60, 75)) + "%",
+        "cbn_alerts": str(random.randint(5, 15)),
+        "heatmap": [
+            {"id": i, "status": 2 if random.random() > 0.85 else (1 if random.random() > 0.7 else 0)} for i in range(36)
+        ]
+    }
+
+@app.get("/api/v1/portfolio/esg", tags=["Dashboard"])
+async def get_portfolio_esg():
+    """Returns portfolio-wide ESG metrics."""
+    return {
+        "radar_data": [
+            {"subject": 'Environmental', "A": 65, "fullMark": 100},
+            {"subject": 'Social', "A": 85, "fullMark": 100},
+            {"subject": 'Governance', "A": 75, "fullMark": 100},
+            {"subject": 'Ethics', "A": 55, "fullMark": 100},
+            {"subject": 'Sustainability', "A": 68, "fullMark": 100},
+        ],
+        "recommendations": [
+            {"title": "Improve Carbon Disclosures", "desc": "80% of top-tier entities lack verified scope-3 emission tracking."},
+            {"title": "Board Diversity Mandates", "desc": "Consider flagging entities missing modern governance protocols to minimize PR risks."},
+            {"title": "Supply Chain Audits", "desc": "Identify high-risk tier 2 suppliers currently lacking basic ESG compliance integration."}
+        ]
+    }
+
 async def fetch_real_compliance_info(company_name: str, rc_number: str):
     import json
     import random

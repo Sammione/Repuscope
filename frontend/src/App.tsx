@@ -82,7 +82,10 @@ const App: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-2 md:gap-6">
-            <button className="hidden md:flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-xl font-bold text-sm transition-all shadow-lg shadow-primary/20">
+            <button 
+              onClick={() => window.print()}
+              className="hidden md:flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-xl font-bold text-sm transition-all shadow-lg shadow-primary/20 hover:scale-105"
+            >
               <PlusCircle size={18} />
               Quick Report
             </button>
