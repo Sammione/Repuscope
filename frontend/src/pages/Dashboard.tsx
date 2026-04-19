@@ -10,7 +10,7 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await client.get('/stats');
+        const res = await client.get('/portfolio/stats');
         setStats(res.data);
       } catch (err) {
         console.error(err);
